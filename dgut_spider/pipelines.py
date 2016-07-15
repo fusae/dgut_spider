@@ -32,8 +32,8 @@ class CustomPipeline(object):
         if spider.name == 'XNXQCourse':
             # Connect to the database
             connection = pymysql.connect(host='localhost',
-                                         user='dgut_admin',
-                                         password='admindgut+1s',
+                                         user='username',
+                                         password='password',
                                          db='DGUT',
                                          charset='utf8mb4',
                                          cursorclass=pymysql.cursors.DictCursor)
