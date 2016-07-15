@@ -7,6 +7,8 @@
 
 import scrapy
 
+# -----------------------first-----------------
+
 # Course data
 class CourseItem(scrapy.Item):
     value = scrapy.Field()
@@ -32,3 +34,10 @@ class DetailItem(scrapy.Item):
     className = scrapy.Field() # 上课班级
     stuNum = scrapy.Field() # 上课人数
 
+
+# -----------------------second-----------------
+
+# professor title 
+class TitleItem(scrapy.Item):
+    text = scrapy.Field()
+    num = scrapy.Field()

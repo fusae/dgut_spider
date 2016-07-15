@@ -10,7 +10,7 @@ class XNXQSpider(scrapy.Spider):
 
     def parse(self, response):
         # find the year and semester
-        items = []
+
         # to get description of the every year and semester
         desc = response.xpath('//select[contains(@name, "Sel_XNXQ")]/option/text()').extract()
         # to get the every year and semester num
