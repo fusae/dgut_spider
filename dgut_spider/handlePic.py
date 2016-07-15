@@ -1,10 +1,12 @@
 from PIL import Image, ImageEnhance, ImageFilter
 import pytesseract
 import os
+import io
+import requests
 
 #path = '/home/fusae/PycharmProjects/dgut_spider/dgut_spider/Data/yzm.gif'
-def handle(path):
-    img = Image.open(path)
+def handle(content):
+    img = Image.open(io.BytesIO(content))
     img = img.convert('RGBA')
     pix = img.load()
 
@@ -33,4 +35,6 @@ def handle(path):
 
 
 if __name__ == '__main__':
-    print(handle(path))
+    r = requests.get('http://jwxt.dgut.edu.cn/jwweb/sys/ValidateCode.aspx')
+    yzm = handle(r.content)
+    print(yzm)
