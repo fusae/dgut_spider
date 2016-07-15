@@ -32,8 +32,8 @@ class CustomPipeline(object):
         if spider.name == 'XNXQCourse':
             # Connect to the database
             connection = pymysql.connect(host='localhost',
-                                         user='username',
-                                         password='password',
+                                         user='dgut_admin',
+                                         password='admindgut+1s',
                                          db='DGUT',
                                          charset='utf8mb4',
                                          cursorclass=pymysql.cursors.DictCursor)
@@ -69,4 +69,11 @@ class CustomPipeline(object):
 
             return item
 
+
+        if spider.name == 'Title':
+            # write to a file
+            self.file = open('Title.json', 'a')
+            line = json.dumps(dict(item), ensure_ascii=False) + '\n' # 避免中文输出成unicode
+            self.file.write(line)
+            return item
 
