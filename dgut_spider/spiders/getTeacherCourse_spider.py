@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 from scrapy.selector import Selector
 from dgut_spider.handlePic import handle
-# the item that store crawled data
+from dgut_spider.items import DetailProfItem
 
 class GetTeacherCourseSpider(scrapy.Spider):
     name = 'TeacherCourse'
@@ -13,7 +13,7 @@ class GetTeacherCourseSpider(scrapy.Spider):
     def __init__(self):
         self.getUrl = 'http://jwxt.dgut.edu.cn/jwweb/ZNPK/TeacherKBFB.aspx' # first
         self.vcodeUrl = 'http://jwxt.dgut.edu.cn/jwweb/sys/ValidateCode.aspx' # second
-        self.postUrl = 'http://jwxt.dgut.edu.cn/jwweb/ZNPK/TeacherKBFB_rpt.aspx'
+        self.postUrl = 'http://jwxt.dgut.edu.cn/jwweb/ZNPK/TeacherKBFB_rpt.aspx' # third
         self.findSessionId = None # to save the cookies
 
     def start_requests(self):
@@ -60,10 +60,21 @@ class GetTeacherCourseSpider(scrapy.Spider):
 
         else:
             # parse data
-            pass
+            self.parseData(body)
 
 
 
+    def parseData(self, body):
+        # parse body data
+        sel = Selector(text=body)
 
+        XXNQ = '20151' # test
+
+        # department, teacher, gender and title
+        temp1 = sel.xpath('//*[@group="group"]/table/tr/td/text()').extract() 
+        
+        for each in temp1:
+            each = each.replace(u'\xa0', u'  ')
+            print(each.split('   '))
 
 
