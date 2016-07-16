@@ -39,20 +39,29 @@ class GetTeacherCourseSpider(scrapy.Spider):
                           'txt_yzm': yzm,
                           'type': '2'},
                 headers={
-                    'Host': 'jwxt.dgut.edu.cn',
-                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:47.0) Gecko/20100101 Firefox/47.0',
-                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                    'Accept-Language': 'zh,en-US;q=0.8,zh-CN;q=0.5,en;q=0.3',
                     'Referer': 'http://jwxt.dgut.edu.cn/jwweb/ZNPK/TeacherKBFB.aspx',
                     'Cookie': self.findSessionId[0] + '=' + self.findSessionId[1],
-                    'Connection': 'keep-alive'
                     },
 
 
                 callback=self.parse)
 
     def parse(self, response):
-        print(response.body.decode('gb2312'))
+        body = response.body.decode('gb2312')
+        num = body.find('alert')
+        if num != -1:
+            # means CAPTCHA validation fails, need to re-request the CAPTCHA
+            yield scrapy.Request(self.vcodeUrl+'?t='+'%.f' % (datetime.now().microsecond / 1000),
+            headers={
+                    'Referer': 'http://jwxt.dgut.edu.cn/jwweb/ZNPK/TeacherKBFB.aspx',
+                    'Cookie': self.findSessionId[0]+'='+self.findSessionId[1]
+                    },
+            callback=self.getAndHandleYzm)
+
+        else:
+            # parse data
+            pass
+
 
 
 
