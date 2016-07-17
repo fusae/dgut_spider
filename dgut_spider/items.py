@@ -49,6 +49,11 @@ class DetailProfItem(scrapy.Item):
     teacher = scrapy.Field() # 教师
     gender = scrapy.Field() # 性别
     title = scrapy.Field() # 职称
+    note1 = scrapy.Field() # 注1
+    note2 = scrapy.Field() # 注2
+
+# detail professor course message
+class DetailProfCourseItem(scrapy.Item):
     snum = scrapy.Field() # serial number
     course = scrapy.Field() # 课程
     credit = scrapy.Field() # 学分
@@ -60,5 +65,3 @@ class DetailProfItem(scrapy.Item):
     week = scrapy.Field() # 周次
     section = scrapy.Field() # 节次
     location = scrapy.Field() # 地点
-    note1 = scrapy.Field() # 注1
-    note2 = scrapy.Field() # 注2
