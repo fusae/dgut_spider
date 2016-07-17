@@ -8,6 +8,7 @@ from scrapy.selector import Selector
 from dgut_spider.handlePic import handle
 from dgut_spider.items import DetailProfItem
 from dgut_spider.items import DetailProfCourseItem
+from dgut_spider.items import containItem
 
 class GetTeacherCourseSpider(scrapy.Spider):
     name = 'TeacherCourse'
@@ -148,7 +149,7 @@ class GetTeacherCourseSpider(scrapy.Spider):
         i = 0
         # every professor
         for each in temp1:
-            tables = [] # all the data in every for loop to send to the pipeline 
+            tables = containItem() # all the data in every for loop to send to the pipeline 
 
             each = each.replace(u'\xa0', u'  ')
             each = each.split('   ')
@@ -166,7 +167,7 @@ class GetTeacherCourseSpider(scrapy.Spider):
             profItem['title'] = title[1]
             profItem['note1'] = noteList[i][0]
             profItem['note2'] = noteList[i][1]
-            tables.append(profItem) # add the first table
+            tables['first'] = profItem # add the first table
 
             # second table
             # every professor's courses
@@ -186,7 +187,7 @@ class GetTeacherCourseSpider(scrapy.Spider):
                 profCourseItem['location'] = AllDetailCourse[i][j][10]
                 profCourses.append(profCourseItem) # every professor's courses
 
-            tables.append(profCourses) # add the second table
+            tables['second'] = profCourseItem # add the second table
 
             i += 1
-            print(tables)
+            yield tables

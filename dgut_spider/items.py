@@ -65,3 +65,8 @@ class DetailProfCourseItem(scrapy.Item):
     week = scrapy.Field() # 周次
     section = scrapy.Field() # 节次
     location = scrapy.Field() # 地点
+
+# the third item which contain first and second item
+class containItem(scrapy.Item):
+    first = scrapy.Field() # for fist table
+    second = scrapy.Field() # for second table

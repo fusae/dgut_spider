@@ -65,7 +65,7 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'dgut_spider.pipelines.CustomPipeline': 300,
+    'dgut_spider.pipelines.CustomPipeline': 200,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
