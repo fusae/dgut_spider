@@ -1,4 +1,4 @@
-# -*- coding: gb2312 -*-
+# -*- coding: gbk -*-
 import scrapy
 from scrapy.http import FormRequest
 import json
@@ -12,12 +12,13 @@ from dgut_spider.items import DetailProfCourseItem
 class GetTeacherCourseSpider(scrapy.Spider):
     name = 'TeacherCourse'
 
-    def __init__(self):
+    def __init__(self, selXNXQ='', titleCode=''):
         self.getUrl = 'http://jwxt.dgut.edu.cn/jwweb/ZNPK/TeacherKBFB.aspx' # first
         self.vcodeUrl = 'http://jwxt.dgut.edu.cn/jwweb/sys/ValidateCode.aspx' # second
         self.postUrl = 'http://jwxt.dgut.edu.cn/jwweb/ZNPK/TeacherKBFB_rpt.aspx' # third
         self.findSessionId = None # to save the cookies
-        self.XNXQ = '20151'
+        self.XNXQ = selXNXQ
+        self.titleCode = titleCode
 
     def start_requests(self):
         request = scrapy.Request(self.getUrl,
@@ -38,7 +39,7 @@ class GetTeacherCourseSpider(scrapy.Spider):
         
         yield FormRequest(self.postUrl,
                 formdata={'Sel_XNXQ': self.XNXQ,
-                          'sel_zc': '011',
+                          'sel_zc': self.titleCode,
                           'txt_yzm': yzm,
                           'type': '2'},
                 headers={
@@ -50,7 +51,7 @@ class GetTeacherCourseSpider(scrapy.Spider):
                 callback=self.parse)
 
     def parse(self, response):
-        body = response.body.decode('gb2312')
+        body = response.body.decode('gbk')
         num = body.find('alert')
         if num != -1:
             # means CAPTCHA validation fails, need to re-request the CAPTCHA
@@ -186,6 +187,6 @@ class GetTeacherCourseSpider(scrapy.Spider):
                 profCourses.append(profCourseItem) # every professor's courses
 
             tables.append(profCourses) # add the second table
-            print(tables)
-            print('--------------------------------')
+
             i += 1
+            print(tables)

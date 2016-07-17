@@ -138,7 +138,7 @@ class GetXNXQCourseSpider(scrapy.Spider):
                 callback=self.parse)
 
     def parse(self, response):
-        body = response.body.decode('gb2312')
+        body = response.body.decode('gbk')
         num = body.find('alert')
         if num != -1:
             # means CAPTCHA validation fails, need to re-request the CAPTCHA
