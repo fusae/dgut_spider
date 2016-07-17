@@ -49,6 +49,7 @@ class DetailProfItem(scrapy.Item):
     teacher = scrapy.Field() # 教师
     gender = scrapy.Field() # 性别
     title = scrapy.Field() # 职称
+    snum = scrapy.Field() # serial number
     course = scrapy.Field() # 课程
     credit = scrapy.Field() # 学分
     teachWay = scrapy.Field() # 授课方式
