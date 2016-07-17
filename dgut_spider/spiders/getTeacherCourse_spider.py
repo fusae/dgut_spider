@@ -6,6 +6,7 @@ from datetime import datetime
 from scrapy.selector import Selector
 from dgut_spider.handlePic import handle
 from dgut_spider.items import DetailProfItem
+import re
 
 class GetTeacherCourseSpider(scrapy.Spider):
     name = 'TeacherCourse'
@@ -76,5 +77,58 @@ class GetTeacherCourseSpider(scrapy.Spider):
         for each in temp1:
             each = each.replace(u'\xa0', u'  ')
             print(each.split('   '))
+
+        # get all the note data by regular expressions
+        noteTables = sel.xpath('//table[@style="border:0px;"]').extract()
+        for noteTable in noteTables:
+            if '<b>'  in noteTable:
+                sele = Selector(text = noteTable)
+                note = (sele.xpath('//table/tr/td/b/text()').extract())
+                noteText = (sele.xpath('//table/tr/td/text()').extract())
+
+        # get all the course data
+        courseTables = sel.xpath('//table[@class="page_table"]/tbody').extract()
+        
+        for table in courseTables:
+
+            s = Selector(text = table)
+            trs = s.xpath('//tr').extract()
+            for tr in trs:
+                sel = Selector(text = tr)
+                snum = (sel.xpath('//td[1]/text()').extract())
+                course = (sel.xpath('//td[2]/text()').extract())
+                credit = (sel.xpath('//td[3]/text()').extract())
+                teachWay = (sel.xpath('//td[4]/text()').extract())
+                courseType = (sel.xpath('//td[5]/text()').extract())
+                classNum = (sel.xpath('//td[6]/text()').extract())
+                className = (sel.xpath('//td[7]/text()').extract())
+                stuNum = (sel.xpath('//td[8]/text()').extract())
+                week = (sel.xpath('//td[9]/text()').extract())
+                section = (sel.xpath('//td[10]/text()').extract())
+                location = (sel.xpath('//td[11]/text()').extract())
+
+                tmpList = []
+                tmpList.append(snum)
+                tmpList.append(course)
+                tmpList.append(credit)
+                tmpList.append(teachWay)
+                tmpList.append(courseType)
+                tmpList.append(classNum)
+                tmpList.append(className)
+                tmpList.append(stuNum)
+                tmpList.append(week)
+                tmpList.append(section)
+                tmpList.append(location)
+
+                # to know whether every variable is empty
+                detailList = []
+                for each in tmpList:
+                    if not each:
+                        each = ''
+                    else:
+                        each = each[0]
+                    detailList.append(each)
+
+                print(detailList)
 
 
