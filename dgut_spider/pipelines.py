@@ -16,6 +16,8 @@ class CustomPipeline(object):
         if not os.path.exists(fileName):
             os.mkdir(fileName)
         os.chdir(fileName)
+        
+
     def process_item(self, item, spider):
         if spider.name == 'XNXQ':
             self.file = open('XNXQ.json', 'a') # 注意多次运行，会追加相同的内容
@@ -37,7 +39,6 @@ class CustomPipeline(object):
                                          db='DGUT',
                                          charset='utf8mb4',
                                          cursorclass=pymysql.cursors.DictCursor)
-
             try:
                 with connection.cursor() as cursor:
                     # Create a new record
@@ -76,4 +77,5 @@ class CustomPipeline(object):
             line = json.dumps(dict(item), ensure_ascii=False) + '\n' # 避免中文输出成unicode
             self.file.write(line)
             return item
+
 

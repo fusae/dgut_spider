@@ -13,6 +13,11 @@ from dgut_spider.items import DetailItem
 
 class GetXNXQCourseSpider(scrapy.Spider):
     name = 'XNXQCourse'
+    custom_settings = {
+            'ITEM_PIPELINES': {
+                'dgut_spider.pipelines.CustomPipeline': 300
+                }
+            }
 
     def __init__(self, selXNXQ='', selKC=''):
         self.postUrl = 'http://jwxt.dgut.edu.cn/jwweb/ZNPK/KBFB_LessonSel_rpt.aspx' # the form data summit to this url
