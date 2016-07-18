@@ -79,3 +79,11 @@ class CustomPipeline(object):
             return item
 
 
+
+class TeacherCoursePipeline(object):
+    def process_item(self, item, spider):
+        print('I am called!!!!!!!!!!!!!!')
+        print(item)
+
+        return item
+

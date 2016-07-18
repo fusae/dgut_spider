@@ -9,9 +9,15 @@ from dgut_spider.handlePic import handle
 from dgut_spider.items import DetailProfItem
 from dgut_spider.items import DetailProfCourseItem
 from dgut_spider.items import containItem
+import pymysql.cursors
 
 class GetTeacherCourseSpider(scrapy.Spider):
     name = 'TeacherCourse'
+    custom_settings = {
+            'ITEM_PIPELINES': {
+                'dgut_spider.pipelines.TeacherCoursePipeline': 300,
+                }
+            }
 
     def __init__(self, selXNXQ='', titleCode=''):
         self.getUrl = 'http://jwxt.dgut.edu.cn/jwweb/ZNPK/TeacherKBFB.aspx' # first
@@ -20,6 +26,15 @@ class GetTeacherCourseSpider(scrapy.Spider):
         self.findSessionId = None # to save the cookies
         self.XNXQ = selXNXQ
         self.titleCode = titleCode
+
+        # store in the databse
+        # Connect to the database
+        self.connection = pymysql.connect(host='localhost',
+                                     user='dgut_admin',
+                                     password='admindgut+1s',
+                                     db='DGUT',
+                                     charset='utf8mb4',
+                                     cursorclass=pymysql.cursors.DictCursor)
 
     def start_requests(self):
         request = scrapy.Request(self.getUrl,
@@ -91,16 +106,18 @@ class GetTeacherCourseSpider(scrapy.Spider):
                         noteText.append('')
                 noteList.append(noteText)
 
+        # len(noteList) is the number of staff
 
         # get all the course data
         courseTables = sel.xpath('//table[@class="page_table"]/tbody').extract()
+        # len(courseTables) is the number of staff
         
         AllDetailCourse = [] # all the teachers' course
-        for table in courseTables:
+        for table in courseTables: 
             everyTeacherC = [] # every teacher's course
             s = Selector(text = table)
             trs = s.xpath('//tr').extract()
-            for tr in trs:
+            for tr in trs: # every tr is a course
                 sel = Selector(text = tr)
                 snum = (sel.xpath('//td[1]/text()').extract())
                 course = (sel.xpath('//td[2]/text()').extract())
@@ -149,7 +166,8 @@ class GetTeacherCourseSpider(scrapy.Spider):
         i = 0
         # every professor
         for each in temp1:
-            tables = containItem() # all the data in every for loop to send to the pipeline 
+#            tables = containItem() # all the data in every for loop to send to the pipeline 
+            tables = {}
 
             each = each.replace(u'\xa0', u'  ')
             each = each.split('   ')
@@ -172,6 +190,7 @@ class GetTeacherCourseSpider(scrapy.Spider):
             # second table
             # every professor's courses
             profCourses = []
+            tables['second'] = []
             for j in range(len(AllDetailCourse[i])): # how many course for every professor
                 profCourseItem = DetailProfCourseItem() # every course for every professor
                 profCourseItem['snum'] = AllDetailCourse[i][j][0] # i means i-th professor, j means j-th course, third num means what position of the course
@@ -187,7 +206,13 @@ class GetTeacherCourseSpider(scrapy.Spider):
                 profCourseItem['location'] = AllDetailCourse[i][j][10]
                 profCourses.append(profCourseItem) # every professor's courses
 
-            tables['second'] = profCourseItem # add the second table
+                (tables['second']).append(profCourses) # add the second table
 
             i += 1
-            yield tables
+#            yield tables
+            
+#            print(tables['first'])
+#            print(tables['second'][0])
+#           print('-------------------------')
+
+
