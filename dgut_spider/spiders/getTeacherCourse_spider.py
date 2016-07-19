@@ -112,10 +112,56 @@ class GetTeacherCourseSpider(scrapy.Spider):
         courseTables = sel.xpath('//table[@class="page_table"]/tbody').extract()
         # len(courseTables) is the number of staff
         
-        AllDetailCourse = [] # all the teachers' course
-        for table in courseTables: 
-            everyTeacherC = [] # every teacher's course
-            s = Selector(text = table)
+
+        # get department, teacher, gender and title
+        sel = Selector(text = body)
+        temp1 = sel.xpath('//*[@group="group"]/table/tr/td/text()').extract() 
+
+
+        # fill two tables, which will store in the database
+        i = 0
+        # every professor
+        for each in temp1:
+#            tables = containItem() # all the data in every for loop to send to the pipeline 
+            tables = {}
+
+            each = each.replace(u'\xa0', u'  ')
+            each = each.split('   ')
+            depart = each[0].split('£º')
+            teacher = each[1].split('£º')
+            gender = each[2].split('£º')
+            title = each[3].split('£º')
+
+            # first table
+            profItem = DetailProfItem()
+            profItem['XNXQ'] = self.XNXQ
+            profItem['department'] = depart[1] # department
+            profItem['teacher'] = teacher[1] # teacher
+            profItem['gender'] = gender[1]
+            profItem['title'] = title[1]
+            profItem['note1'] = noteList[i][0]
+            profItem['note2'] = noteList[i][1]
+
+            with self.connection.cursor() as cursor:
+                # Create a new record
+                sql1 = "INSERT INTO staff (XNXQ, \
+                                          department, \
+                                          teacher, \
+                                          gender, \
+                                          title, \
+                                          note1, \
+                                          note2) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                cursor.execute(sql1, (profItem['XNXQ'],
+                                     profItem['department'],
+                                     profItem['teacher'],
+                                     profItem['gender'],
+                                     profItem['title'],
+                                     profItem['note1'],
+                                     profItem['note2']))
+                self.connection.commit()
+
+            # second table
+            s = Selector(text = courseTables[i])
             trs = s.xpath('//tr').extract()
             for tr in trs: # every tr is a course
                 sel = Selector(text = tr)
@@ -152,67 +198,60 @@ class GetTeacherCourseSpider(scrapy.Spider):
                     else:
                         each = each[0]
                     detailCourse.append(each)
-
-                everyTeacherC.append(detailCourse)
-
-            AllDetailCourse.append(everyTeacherC)
-
-        # get department, teacher, gender and title
-        sel = Selector(text = body)
-        temp1 = sel.xpath('//*[@group="group"]/table/tr/td/text()').extract() 
-
-
-        # fill two tables, which will store in the database
-        i = 0
-        # every professor
-        for each in temp1:
-#            tables = containItem() # all the data in every for loop to send to the pipeline 
-            tables = {}
-
-            each = each.replace(u'\xa0', u'  ')
-            each = each.split('   ')
-            depart = each[0].split('£º')
-            teacher = each[1].split('£º')
-            gender = each[2].split('£º')
-            title = each[3].split('£º')
-
-            # first table
-            profItem = DetailProfItem()
-            profItem['XNXQ'] = self.XNXQ
-            profItem['department'] = depart[1] # department
-            profItem['teacher'] = teacher[1] # teacher
-            profItem['gender'] = gender[1]
-            profItem['title'] = title[1]
-            profItem['note1'] = noteList[i][0]
-            profItem['note2'] = noteList[i][1]
-            tables['first'] = profItem # add the first table
-
-            # second table
-            # every professor's courses
-            profCourses = []
-            tables['second'] = []
-            for j in range(len(AllDetailCourse[i])): # how many course for every professor
+                    
                 profCourseItem = DetailProfCourseItem() # every course for every professor
-                profCourseItem['snum'] = AllDetailCourse[i][j][0] # i means i-th professor, j means j-th course, third num means what position of the course
-                profCourseItem['course'] = AllDetailCourse[i][j][1]
-                profCourseItem['credit'] = AllDetailCourse[i][j][2]
-                profCourseItem['teachWay'] = AllDetailCourse[i][j][3]
-                profCourseItem['courseType'] = AllDetailCourse[i][j][4]
-                profCourseItem['classNum'] = AllDetailCourse[i][j][5]
-                profCourseItem['className'] = AllDetailCourse[i][j][6]
-                profCourseItem['stuNum'] = AllDetailCourse[i][j][7]
-                profCourseItem['week'] = AllDetailCourse[i][j][8]
-                profCourseItem['section'] = AllDetailCourse[i][j][9]
-                profCourseItem['location'] = AllDetailCourse[i][j][10]
-                profCourses.append(profCourseItem) # every professor's courses
+                profCourseItem['snum'] = detailCourse[0]
+                profCourseItem['course'] = detailCourse[1]
+                profCourseItem['credit'] = detailCourse[2]
+                profCourseItem['teachWay'] = detailCourse[3]
+                profCourseItem['courseType'] = detailCourse[4]
+                profCourseItem['classNum'] = detailCourse[5]
+                profCourseItem['className'] = detailCourse[6]
+                profCourseItem['stuNum'] = detailCourse[7]
+                profCourseItem['week'] = detailCourse[8]
+                profCourseItem['section'] = detailCourse[9]
+                profCourseItem['location'] = detailCourse[10]
 
-                (tables['second']).append(profCourses) # add the second table
+                with self.connection.cursor() as cursor:
+                    try:
+                        # Create a new record
+#                        teacherId = self.connection.insert_id()
+                        cursor.execute("select max(id) from staff")
+                        teacherId = cursor.fetchone()['max(id)']
+                            
+                        sql2 = "INSERT INTO staffCourse (teacherId, \
+                                                         snum, \
+                                                         course, \
+                                                         credit, \
+                                                         teachWay, \
+                                                         courseType, \
+                                                         classNum, \
+                                                         className, \
+                                                         stuNum, \
+                                                         week, \
+                                                         section, \
+                                                         location) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                        cursor.execute(sql2, (teacherId,
+                                              profCourseItem['snum'],
+                                              profCourseItem['course'],
+                                              profCourseItem['credit'],
+                                              profCourseItem['teachWay'],
+                                              profCourseItem['courseType'],
+                                              profCourseItem['classNum'],
+                                              profCourseItem['className'],
+                                              profCourseItem['stuNum'],
+                                              profCourseItem['week'],
+                                              profCourseItem['section'],
+                                              profCourseItem['location']))
+                        self.connection.commit()
+                    except Exception as e:
+                        print(e)
+                        print('------------------------')
+
 
             i += 1
-#            yield tables
-            
-#            print(tables['first'])
-#            print(tables['second'][0])
-#           print('-------------------------')
+
+        # close the connection
+        self.connection.close()
 
 
