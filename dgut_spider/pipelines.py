@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: gbk -*-
 
 # Define your item pipelines here
 #
@@ -81,9 +81,79 @@ class CustomPipeline(object):
 
 
 class TeacherCoursePipeline(object):
-    def process_item(self, item, spider):
-        print('I am called!!!!!!!!!!!!!!')
-        print(item)
+    def __init__(self):
+        self.connection = None
+    def open_spider(self, spider):
+        # Connect to the database
+        self.connection = pymysql.connect(host='localhost',
+                                     user='dgut_admin',
+                                     password='admindgut+1s',
+                                     db='DGUT',
+                                     charset='utf8mb4',
+                                     cursorclass=pymysql.cursors.DictCursor)
 
-        return item
+    def process_item(self, item, spider):
+#        print(item)
+        try:
+            with self.connection.cursor() as cursor:
+#                #Create a new record
+#                sql1 = "INSERT INTO staff (XNXQ, \
+#                                          department, \
+#                                          teacher, \
+#                                          gender, \
+#                                          title, \
+#                                          note1, \
+#                                          note2) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+#                # Teacher only insert once
+#                if item['second']['snum'] == '1':
+#                    print('snum:' + item['second']['snum'])
+#                    cursor.execute(sql1, (item['first']['XNXQ'],
+#                                         item['first']['department'],
+#                                         item['first']['teacher'],
+#                                         item['first']['gender'],
+#                                         item['first']['title'],
+#                                         item['first']['note1'],
+#                                         item['first']['note2']))
+#                    self.connection.commit()
+
+                #Create a new record
+                cursor.execute("select max(id) from staff")
+                teacherId = cursor.fetchone()['max(id)']
+#                print('teacherId:' + str(teacherId))
+#                print(item['second'])
+                    
+                sql2 = "INSERT INTO staffCourse (teacherId, \
+                                                 snum, \
+                                                 course, \
+                                                 credit, \
+                                                 teachWay, \
+                                                 courseType, \
+                                                 classNum, \
+                                                 className, \
+                                                 stuNum, \
+                                                 week, \
+                                                 section, \
+                                                 location) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                cursor.execute(sql2, (teacherId,
+                                      item['second']['snum'],
+                                      item['second']['course'],
+                                      item['second']['credit'],
+                                      item['second']['teachWay'],
+                                      item['second']['courseType'],
+                                      item['second']['classNum'],
+                                      item['second']['className'],
+                                      item['second']['stuNum'],
+                                      item['second']['week'],
+                                      item['second']['section'],
+                                      item['second']['location']))
+                self.connection.commit()
+
+        except Exception as e:
+            print('------------------------------------------')
+            print(e)
+
+    def close_spider(self, spider):
+        self.connection.close()
+
+
 
