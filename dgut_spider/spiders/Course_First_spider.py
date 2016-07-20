@@ -6,6 +6,11 @@ import json
 
 class CourseSpider(scrapy.Spider):
     name = 'Course'
+    custom_settings = {
+            'ITEM_PIPELINES': {
+                'dgut_spider.pipelines.CoursePipeline': 300
+                }
+            }
     
     def __init__(self, *args, **kwargs):
         super(CourseSpider, self).__init__(*args, **kwargs)

@@ -3,6 +3,11 @@ from dgut_spider.items import TitleItem
 
 class TitleSpider(scrapy.Spider):
     name = 'Title'
+    custom_settings = {
+            'ITEM_PIPELINES': {
+                'dgut_spider.pipelines.TitlePipeline': 300
+                }
+            }
 
     start_urls = ['http://jwxt.dgut.edu.cn/jwweb/ZNPK/TeacherKBFB.aspx']
 

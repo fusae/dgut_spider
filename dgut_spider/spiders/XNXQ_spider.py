@@ -3,6 +3,11 @@ from dgut_spider.items import XNXQItem
 
 class XNXQSpider(scrapy.Spider):
     name = 'XNXQ'
+    custom_settings = {
+            'ITEM_PIPELINES': {
+                'dgut_spider.pipelines.XNXQPipeline': 300
+                }
+            }
         
     def start_requests(self):
         request = scrapy.Request('http://jwxt.dgut.edu.cn/jwweb/ZNPK/KBFB_LessonSel.aspx', callback=self.parse)
