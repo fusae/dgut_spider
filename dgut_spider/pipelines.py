@@ -11,26 +11,57 @@ import pymysql.cursors
 
 fileName = '/home/fusae/PycharmProjects/dgut_spider/dgut_spider/Data'
 
-class CustomPipeline(object):
+# To get XNXQ
+class XNXQPipeline(object):
     def __init__(self):
         if not os.path.exists(fileName):
             os.mkdir(fileName)
         os.chdir(fileName)
-        
+        self.jsonFile = 'XNXQ.json'
+
+    def open_spider(self, spider):
+        # if XNXQ.json file exists, then remove it 
+        if os.path.exists(self.jsonFile):
+            os.remove(self.jsonFile)
+        self.file = open(self.jsonFile, 'a')
+    
+    def process_item(self, item, spider):
+        line = json.dumps(dict(item), ensure_ascii=False) + '\n' # 避免中文输出成unicode
+        self.file.write(line)
+        return item
+
+    def close_spider(self, spider):
+        self.file.close()
+
+# First table
+# To get courses
+class CoursePipeline(object):
+    def __init__(self):
+        if not os.path.exists(fileName):
+            os.mkdir(fileName)
+        os.chdir(fileName)
+        self.jsonFile = 'Course.json'
+
+    def open_spider(self, spider):
+        # if course.json file exists, then remove it 
+        if os.path.exists(self.jsonFile):
+            os.remove(self.jsonFile)
+        self.file = open(self.jsonFile, 'a')
+    
+    def process_item(self, item, spider):
+        line = json.dumps(dict(item), ensure_ascii=False) + '\n' # 避免中文输出成unicode
+        self.file.write(line)
+        return item
+
+    def close_spider(self, spider):
+        self.file.close()
+
+
+# First table
+# to get detail courses, store into databse
+class CustomPipeline(object):
 
     def process_item(self, item, spider):
-        if spider.name == 'XNXQ':
-            self.file = open('XNXQ.json', 'a') # 注意多次运行，会追加相同的内容
-            line = json.dumps(dict(item), ensure_ascii=False) + '\n' # 避免中文输出成unicode
-            self.file.write(line)
-            return item
-
-        if spider.name == 'Course':
-            self.file = open('Course.json', 'a')
-            line = json.dumps(dict(item), ensure_ascii=False) + '\n' # 避免中文输出成unicode
-            self.file.write(line)
-            return item
-
         if spider.name == 'XNXQCourse':
             # Connect to the database
             connection = pymysql.connect(host='localhost',
@@ -71,15 +102,31 @@ class CustomPipeline(object):
             return item
 
 
-        if spider.name == 'Title':
-            # write to a file
-            self.file = open('Title.json', 'a')
-            line = json.dumps(dict(item), ensure_ascii=False) + '\n' # 避免中文输出成unicode
-            self.file.write(line)
-            return item
+# Second table
+# To get title
+class TitlePipeline(object):
+    def __init__(self):
+        if not os.path.exists(fileName):
+            os.mkdir(fileName)
+        os.chdir(fileName)
+        self.jsonFile = 'Title.json'
 
+    def open_spider(self, spider):
+        # if Title.json file exists, then remove it 
+        if os.path.exists(self.jsonFile):
+            os.remove(self.jsonFile)
+        self.file = open(self.jsonFile, 'a')
+    
+    def process_item(self, item, spider):
+        line = json.dumps(dict(item), ensure_ascii=False) + '\n' # 避免中文输出成unicode
+        self.file.write(line)
+        return item
 
+    def close_spider(self, spider):
+        self.file.close()
 
+# Second table
+# To get detail staff and courses of staff, store into database
 class TeacherCoursePipeline(object):
     def __init__(self):
         self.connection = None
@@ -96,31 +143,28 @@ class TeacherCoursePipeline(object):
 #        print(item)
         try:
             with self.connection.cursor() as cursor:
-#                #Create a new record
-#                sql1 = "INSERT INTO staff (XNXQ, \
-#                                          department, \
-#                                          teacher, \
-#                                          gender, \
-#                                          title, \
-#                                          note1, \
-#                                          note2) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-#                # Teacher only insert once
-#                if item['second']['snum'] == '1':
-#                    print('snum:' + item['second']['snum'])
-#                    cursor.execute(sql1, (item['first']['XNXQ'],
-#                                         item['first']['department'],
-#                                         item['first']['teacher'],
-#                                         item['first']['gender'],
-#                                         item['first']['title'],
-#                                         item['first']['note1'],
-#                                         item['first']['note2']))
-#                    self.connection.commit()
+                #Create a new record
+                sql1 = "INSERT INTO staff (XNXQ, \
+                                          department, \
+                                          teacher, \
+                                          gender, \
+                                          title, \
+                                          note1, \
+                                          note2) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                # Teacher only insert once
+                if item['second']['snum'] == '1':
+                    cursor.execute(sql1, (item['first']['XNXQ'],
+                                         item['first']['department'],
+                                         item['first']['teacher'],
+                                         item['first']['gender'],
+                                         item['first']['title'],
+                                         item['first']['note1'],
+                                         item['first']['note2']))
+                    self.connection.commit()
 
                 #Create a new record
                 cursor.execute("select max(id) from staff")
                 teacherId = cursor.fetchone()['max(id)']
-#                print('teacherId:' + str(teacherId))
-#                print(item['second'])
                     
                 sql2 = "INSERT INTO staffCourse (teacherId, \
                                                  snum, \
@@ -151,6 +195,7 @@ class TeacherCoursePipeline(object):
         except Exception as e:
             print('------------------------------------------')
             print(e)
+        return item
 
     def close_spider(self, spider):
         self.connection.close()
