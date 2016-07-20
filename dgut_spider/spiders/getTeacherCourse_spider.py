@@ -15,7 +15,7 @@ class GetTeacherCourseSpider(scrapy.Spider):
     name = 'TeacherCourse'
     custom_settings = {
             'ITEM_PIPELINES': {
-                'dgut_spider.pipelines.TeacherCoursePipeline': 300,
+                'dgut_spider.pipelines.TeacherCoursePipeline': 200,
                 }
             }
 
@@ -27,14 +27,6 @@ class GetTeacherCourseSpider(scrapy.Spider):
         self.XNXQ = selXNXQ
         self.titleCode = titleCode
 
-        # store in the databse
-        # Connect to the database
-        self.connection = pymysql.connect(host='localhost',
-                                     user='dgut_admin',
-                                     password='admindgut+1s',
-                                     db='DGUT',
-                                     charset='utf8mb4',
-                                     cursorclass=pymysql.cursors.DictCursor)
 
     def start_requests(self):
         request = scrapy.Request(self.getUrl,
@@ -80,7 +72,9 @@ class GetTeacherCourseSpider(scrapy.Spider):
 
         else:
             # parse data
-            self.parseData(body)
+#            self.parseData(body)
+            for r in self.parseData(body):
+                yield r
 
 
 
@@ -122,8 +116,6 @@ class GetTeacherCourseSpider(scrapy.Spider):
         i = 0
         # every professor
         for each in temp1:
-#            tables = containItem() # all the data in every for loop to send to the pipeline 
-            tables = {}
 
             each = each.replace(u'\xa0', u'  ')
             each = each.split('   ')
@@ -142,26 +134,9 @@ class GetTeacherCourseSpider(scrapy.Spider):
             profItem['note1'] = noteList[i][0]
             profItem['note2'] = noteList[i][1]
 
-            with self.connection.cursor() as cursor:
-                # Create a new record
-                sql1 = "INSERT INTO staff (XNXQ, \
-                                          department, \
-                                          teacher, \
-                                          gender, \
-                                          title, \
-                                          note1, \
-                                          note2) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-                cursor.execute(sql1, (profItem['XNXQ'],
-                                     profItem['department'],
-                                     profItem['teacher'],
-                                     profItem['gender'],
-                                     profItem['title'],
-                                     profItem['note1'],
-                                     profItem['note2']))
-                self.connection.commit()
-
             # second table
             s = Selector(text = courseTables[i])
+            i += 1
             trs = s.xpath('//tr').extract()
             for tr in trs: # every tr is a course
                 sel = Selector(text = tr)
@@ -212,46 +187,12 @@ class GetTeacherCourseSpider(scrapy.Spider):
                 profCourseItem['section'] = detailCourse[9]
                 profCourseItem['location'] = detailCourse[10]
 
-                with self.connection.cursor() as cursor:
-                    try:
-                        # Create a new record
-#                        teacherId = self.connection.insert_id()
-                        cursor.execute("select max(id) from staff")
-                        teacherId = cursor.fetchone()['max(id)']
-                            
-                        sql2 = "INSERT INTO staffCourse (teacherId, \
-                                                         snum, \
-                                                         course, \
-                                                         credit, \
-                                                         teachWay, \
-                                                         courseType, \
-                                                         classNum, \
-                                                         className, \
-                                                         stuNum, \
-                                                         week, \
-                                                         section, \
-                                                         location) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                        cursor.execute(sql2, (teacherId,
-                                              profCourseItem['snum'],
-                                              profCourseItem['course'],
-                                              profCourseItem['credit'],
-                                              profCourseItem['teachWay'],
-                                              profCourseItem['courseType'],
-                                              profCourseItem['classNum'],
-                                              profCourseItem['className'],
-                                              profCourseItem['stuNum'],
-                                              profCourseItem['week'],
-                                              profCourseItem['section'],
-                                              profCourseItem['location']))
-                        self.connection.commit()
-                    except Exception as e:
-                        print(e)
-                        print('------------------------')
+                tables = containItem() # all the data in every for loop to send to the pipeline 
+                tables['first'] = profItem
+                tables['second'] = profCourseItem
+                
+                yield tables
 
 
-            i += 1
-
-        # close the connection
-        self.connection.close()
 
 
