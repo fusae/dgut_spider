@@ -70,3 +70,10 @@ class DetailProfCourseItem(scrapy.Item):
 class containItem(scrapy.Item):
     first = scrapy.Field() # for fist table
     second = scrapy.Field() # for second table
+
+# -----------------------third-----------------
+# name and its' code
+class ClassItem(scrapy.Item):
+    text = scrapy.Field()
+    num = scrapy.Field()
+
