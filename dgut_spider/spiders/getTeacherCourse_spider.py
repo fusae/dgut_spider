@@ -9,7 +9,6 @@ from dgut_spider.handlePic import handle
 from dgut_spider.items import DetailProfItem
 from dgut_spider.items import DetailProfCourseItem
 from dgut_spider.items import containItem
-import pymysql.cursors
 
 class GetTeacherCourseSpider(scrapy.Spider):
     name = 'TeacherCourse'
@@ -38,7 +37,7 @@ class GetTeacherCourseSpider(scrapy.Spider):
         # find the session id
         self.findSessionId = response.headers.getlist('Set-Cookie')[0].decode().split(";")[0].split("=")
         request = scrapy.Request(self.vcodeUrl,
-                cookies= {self.findSessionId[0]: self.findSessionId[1]},
+                cookies = {self.findSessionId[0]: self.findSessionId[1]},
                 callback = self.getAndHandleYzm)
         yield request
     
