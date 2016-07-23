@@ -73,7 +73,7 @@ class GetClassCourseSpider(scrapy.Spider):
             yield request
 
     def parseData(self, response):
-        with open('three', 'wb') as f:
+        with open('three.jpg', 'wb') as f:
             f.write(response.body)
         
 
