@@ -77,3 +77,10 @@ class ClassItem(scrapy.Item):
     text = scrapy.Field()
     num = scrapy.Field()
 
+
+# -----------------------fourth-----------------
+# campus, teaching building and classroom
+class ClassroomItem(scrapy.Item):
+    XQ = scrapy.Field()
+    JXL = scrapy.Field()
+    room = scrapy.Field()

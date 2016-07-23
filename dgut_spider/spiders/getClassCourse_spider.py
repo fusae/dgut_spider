@@ -4,7 +4,6 @@ from scrapy.http import Request
 from datetime import datetime
 from scrapy.selector import Selector
 from dgut_spider.handlePic import handle
-from urllib.parse import urlencode
 
 class GetClassCourseSpider(scrapy.Spider):
     name = 'ClassCourse'
