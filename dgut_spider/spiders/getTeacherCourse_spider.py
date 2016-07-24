@@ -51,7 +51,7 @@ class GetTeacherCourseSpider(scrapy.Spider):
                           'type': '2'},
                 headers={
                     'Referer': 'http://jwxt.dgut.edu.cn/jwweb/ZNPK/TeacherKBFB.aspx',
-                    'Cookie': self.findSessionId[0] + '=' + self.findSessionId[1],
+                    'Cookie': self.findSessionId[0] + '=' + self.findSessionId[1]
                     },
 
 
