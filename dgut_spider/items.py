@@ -84,3 +84,22 @@ class ClassroomItem(scrapy.Item):
     XQ = scrapy.Field()
     JXL = scrapy.Field()
     room = scrapy.Field()
+
+# some attributes of room
+class RoomItem(scrapy.Item):
+    campus = scrapy.Field()
+    building = scrapy.Field()
+    classroom = scrapy.Field()
+    note1 = scrapy.Field()
+
+# some course message of this room
+class RoomCourseMessageItem(scrapy.Item):
+    courseName = scrapy.Field()
+    teacher = scrapy.Field()
+    classTime = scrapy.Field()
+    num = scrapy.Field()
+
+# the third item which contain first and second item
+class containItem(scrapy.Item):
+    first = scrapy.Field() # for fist table
+    second = scrapy.Field() # for second table
