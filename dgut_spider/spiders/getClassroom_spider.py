@@ -91,6 +91,7 @@ class GetClassroomSpider(scrapy.Spider):
             else:
                 note1 = note1[0]
             roomItem['note1'] = note1
+            roomItem['XNXQ'] = self.Sel_XNXQ
 
             selTr = Selector(text=body)
 #            trs = selTr.xpath('//table[contains(@border, "1")]/tr').extract()
@@ -125,7 +126,8 @@ class GetClassroomSpider(scrapy.Spider):
 
             # second table
             courseItem = RoomCourseMessageItem()
-            # now split message from data dic
+            # now split message from data dict
+            i = 1 # as a serial number of courses
             for k, v in data.items():
                 if v:
                     for each in v:
@@ -141,12 +143,15 @@ class GetClassroomSpider(scrapy.Spider):
                         courseItem['teacher'] = teacher
                         courseItem['classTime'] = classTime
                         courseItem['num'] = num
+                        courseItem['snum'] = str(i)
+                        i += 1
 
                         # third item to contain first and second
                         contain = containItem()
                         contain['first'] = roomItem
                         contain['second'] = courseItem
-                        return contain
+#                        print(contain)
+                        yield contain
 
         
 

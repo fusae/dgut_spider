@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import json
 import os
 import subprocess
@@ -16,6 +17,8 @@ for eachline in fXNXQ:
     for eachline in fParams:
         paramJs = json.loads(eachline)
         Sel_JXL = paramJs['JXL']
+        if Sel_JXL == '117': # 暂不处理第一行
+            continue
         Sel_ROOM = paramJs['room']
         Sel_XQ = paramJs['XQ']
 

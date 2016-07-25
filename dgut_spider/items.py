@@ -81,23 +81,25 @@ class ClassItem(scrapy.Item):
 # -----------------------fourth-----------------
 # campus, teaching building and classroom
 class ClassroomItem(scrapy.Item):
-    XQ = scrapy.Field()
-    JXL = scrapy.Field()
-    room = scrapy.Field()
+    XQ = scrapy.Field()     # 校区
+    JXL = scrapy.Field()    # 教学楼
+    room = scrapy.Field()   # 教室
 
 # some attributes of room
 class RoomItem(scrapy.Item):
-    campus = scrapy.Field()
-    building = scrapy.Field()
-    classroom = scrapy.Field()
-    note1 = scrapy.Field()
+    XNXQ = scrapy.Field()       # 学年学期
+    campus = scrapy.Field()     # 校区
+    building = scrapy.Field()   # 教学楼
+    classroom = scrapy.Field()  # 教室
+    note1 = scrapy.Field()      # 注1
 
 # some course message of this room
 class RoomCourseMessageItem(scrapy.Item):
-    courseName = scrapy.Field()
-    teacher = scrapy.Field()
-    classTime = scrapy.Field()
-    num = scrapy.Field()
+    snum = scrapy.Field()       # 序列号，在插入数据库时起识别插入作用
+    courseName = scrapy.Field() # 课程
+    teacher = scrapy.Field()    # 教师
+    classTime = scrapy.Field()  # 上课时间
+    num = scrapy.Field()        # 上课人数
 
 # the third item which contain first and second item
 class containItem(scrapy.Item):

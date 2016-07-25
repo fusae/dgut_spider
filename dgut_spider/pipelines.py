@@ -247,3 +247,61 @@ class ParamsFourthPipeline(object):
 
     def close_spider(self, spider):
         self.file.close()
+
+
+# Fourth table
+# To get all rooms and courses in every room , then store into database
+class ClassroomPipeline(object):
+    def __init__(self):
+        self.connection = None
+    def open_spider(self, spider):
+        # Connect to the database
+        self.connection = pymysql.connect(host='localhost',
+                                     user='dgut_admin',
+                                     password='admindgut+1s',
+                                     db='DGUT',
+                                     charset='utf8mb4',
+                                     cursorclass=pymysql.cursors.DictCursor)
+
+    def process_item(self, item, spider):
+#        print(item)
+        try:
+            with self.connection.cursor() as cursor:
+                #Create a new record
+                sql1 = "INSERT INTO room (XNXQ, \
+                                          campus, \
+                                          building, \
+                                          classroom, \
+                                          note1) VALUES (%s, %s, %s, %s, %s)"
+                # classroom only insert once
+                if item['second']['snum'] == '1':
+                    cursor.execute(sql1, (item['first']['XNXQ'],
+                                         item['first']['campus'],
+                                         item['first']['building'],
+                                         item['first']['classroom'],
+                                         item['first']['note1']))
+                    self.connection.commit()
+
+                #Create a new record
+                cursor.execute("select max(id) from room")
+                roomId = cursor.fetchone()['max(id)']
+                    
+                sql2 = "INSERT INTO roomCourse (roomId, \
+                                                 courseName, \
+                                                 teacher, \
+                                                 classTime, \
+                                                 num) VALUES (%s, %s, %s, %s, %s)"
+                cursor.execute(sql2, (roomId,
+                                      item['second']['courseName'],
+                                      item['second']['teacher'],
+                                      item['second']['classTime'],
+                                      item['second']['num']))
+                self.connection.commit()
+
+        except Exception as e:
+            print('------------------------------------------')
+            print(e)
+        return item
+
+    def close_spider(self, spider):
+        self.connection.close()
