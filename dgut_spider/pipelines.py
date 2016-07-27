@@ -250,7 +250,7 @@ class ParamsFourthPipeline(object):
 
 
 # Fourth table
-# To get all rooms and courses in every room , then store into database
+# To get all rooms and courses in every room, then store into database
 class ClassroomPipeline(object):
     def __init__(self):
         self.connection = None
@@ -329,3 +329,59 @@ class FifthParamPipeline(object):
 
     def close_spider(self, spider):
         self.file.close()
+
+
+# Fifth table
+# To get all the free choice courses, then store into database
+class FreeChoicePipeline(object):
+    def __init__(self):
+        self.connection = None
+    def open_spider(self, spider):
+        # Connect to the database
+        self.connection = pymysql.connect(host='localhost',
+                                     user='dgut_admin',
+                                     password='admindgut+1s',
+                                     db='DGUT',
+                                     charset='utf8mb4',
+                                     cursorclass=pymysql.cursors.DictCursor)
+
+    def process_item(self, item, spider):
+#        print(item)
+        try:
+            with self.connection.cursor() as cursor:
+                #Create a new record
+                sql1 = "INSERT INTO freeChoice (XNXQ, \
+                                          campus, \
+                                          snum, \
+                                          course, \
+                                          credit, \
+                                          teacher, \
+                                          title, \
+                                          classNum, \
+                                          stuNum, \
+                                          week, \
+                                          classTime, \
+                                          location) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+
+                cursor.execute(sql1, (item['XNXQ'],
+                                      item['campus'],
+                                      int(item['snum']),
+                                      item['course'],
+                                      item['credit'],
+                                      item['teacher'],
+                                      item['title'],
+                                      item['classNum'],
+                                      item['stuNum'],
+                                      item['week'],
+                                      item['classTime'],
+                                      item['location']))
+                self.connection.commit()
+
+
+        except Exception as e:
+            print('------------------------------------------')
+            print(e)
+        return item
+
+    def close_spider(self, spider):
+        self.connection.close()

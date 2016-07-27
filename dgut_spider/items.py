@@ -116,6 +116,8 @@ class FifthParamItem(scrapy.Item):
 
 # detail message about the free choice course
 class FreeChoiceItem(scrapy.Item):
+    XNXQ = scrapy.Field() # 学年学期
+    campus = scrapy.Field() # campus
     snum = scrapy.Field() # serial number
     course = scrapy.Field() # the name of course
     credit = scrapy.Field() # the credit

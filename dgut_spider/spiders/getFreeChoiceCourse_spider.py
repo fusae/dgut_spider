@@ -4,16 +4,25 @@ from datetime import datetime
 from scrapy.http import FormRequest
 from scrapy.selector import Selector
 from dgut_spider.items import FreeChoiceItem
+import json
 
 
 class FreeChoiceSpider(scrapy.Spider):
     name = "FreeChoice"
+    custom_settings = {
+            'ITEM_PIPELINES': {
+                'dgut_spider.pipelines.FreeChoicePipeline': 300
+                }
+            }
 
-    def __init__(self):
+    def __init__(self, Sel_XNXQ='', Sel_XQXX=''):
         self.getUrl = 'http://jwxt.dgut.edu.cn/jwweb/ZNPK/KBFB_RXKBSel.aspx' # first 
         self.vcodeUrl = 'http://jwxt.dgut.edu.cn/jwweb/sys/ValidateCode.aspx' # second
         self.postUrl = 'http://jwxt.dgut.edu.cn/jwweb/ZNPK/KBFB_RXKBSel_rpt.aspx' # third
         self.findSessionId = None # to save cookies
+        self.Sel_XNXQ = Sel_XNXQ
+        self.Sel_XQXX = Sel_XQXX
+        
 
 
     def start_requests(self):
@@ -36,8 +45,8 @@ class FreeChoiceSpider(scrapy.Spider):
 
         yield FormRequest(self.postUrl,
                 formdata={
-                        'Sel_XNXQ': '20151',
-                        'Sel_XQXX': '1',
+                        'Sel_XNXQ': self.Sel_XNXQ,
+                        'Sel_XQXX': self.Sel_XQXX,
                         'txt_yzm': yzm
                         },
                 headers = {
@@ -82,6 +91,7 @@ class FreeChoiceSpider(scrapy.Spider):
                         rowList.append(each[0])
 
                 item = FreeChoiceItem()
+                item['XNXQ'] = self.Sel_XNXQ
                 item['snum'] = rowList[0]
                 item['course'] = rowList[1]
                 item['credit'] = rowList[2]
@@ -93,7 +103,14 @@ class FreeChoiceSpider(scrapy.Spider):
                 item['classTime'] = rowList[8]
                 item['location'] = rowList[9]
 
-                print(item)
+                XQXXName = '/home/fusae/PycharmProjects/dgut_spider/dgut_spider/Data/FifthParam.json'
+                fParam = open(XQXXName, 'r')
+                for eachline in fParam:
+                    paramJs = json.loads(eachline)
+                    if paramJs['value'] == self.Sel_XQXX:
+                        item['campus'] = paramJs['text']
+
+                yield item
 
                 i += 10
                 j += 10
