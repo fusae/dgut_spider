@@ -105,3 +105,25 @@ class RoomCourseMessageItem(scrapy.Item):
 class containItem(scrapy.Item):
     first = scrapy.Field() # for fist table
     second = scrapy.Field() # for second table
+
+
+# -----------------------fifth-----------------
+
+# parameters to post
+class FifthParamItem(scrapy.Item):
+    value = scrapy.Field()
+    text = scrapy.Field()
+
+# detail message about the free choice course
+class FreeChoiceItem(scrapy.Item):
+    snum = scrapy.Field() # serial number
+    course = scrapy.Field() # the name of course
+    credit = scrapy.Field() # the credit
+    teacher = scrapy.Field() # teacher
+    title = scrapy.Field() # title
+    classNum = scrapy.Field() # class num
+    stuNum = scrapy.Field() # the number of students
+    week = scrapy.Field() # how many weeks does the course spend
+    classTime = scrapy.Field() # class time
+    location = scrapy.Field() # the locaton where have class
+

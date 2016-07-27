@@ -305,3 +305,27 @@ class ClassroomPipeline(object):
 
     def close_spider(self, spider):
         self.connection.close()
+
+
+# Fifth table
+# To get parameter
+class FifthParamPipeline(object):
+    def __init__(self):
+        if not os.path.exists(fileName):
+            os.mkdir(fileName)
+        os.chdir(fileName)
+        self.jsonFile = 'FifthParam.json'
+
+    def open_spider(self, spider):
+        # if FifthParam.json file exists, then remove it 
+        if os.path.exists(self.jsonFile):
+            os.remove(self.jsonFile)
+        self.file = open(self.jsonFile, 'a')
+    
+    def process_item(self, item, spider):
+        line = json.dumps(dict(item), ensure_ascii=False) + '\n' # 避免中文输出成unicode
+        self.file.write(line)
+        return item
+
+    def close_spider(self, spider):
+        self.file.close()
