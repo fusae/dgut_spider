@@ -21,8 +21,6 @@ class GetXNXQCourseSpider(scrapy.Spider):
 
     def __init__(self, selXNXQ='', selKC=''):
         self.postUrl = 'http://jwxt.dgut.edu.cn/jwweb/ZNPK/KBFB_LessonSel_rpt.aspx' # the form data summit to this url
-        self.XNXQName = '/home/fusae/PycharmProjects/dgut_spider/dgut_spider/Data/XNXQ.json'
-        self.CourseName = '/home/fusae/PycharmProjects/dgut_spider/dgut_spider/Data/Course.json'
         self.vcodeUrl = 'http://jwxt.dgut.edu.cn/jwweb/sys/ValidateCode.aspx'
         self.getUrl = 'http://jwxt.dgut.edu.cn/jwweb/ZNPK/KBFB_LessonSel.aspx' # first we get this url
         self.findSessionId = None # to save the cookies

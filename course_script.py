@@ -20,7 +20,7 @@ for eachline in fXNXQ:
     fCourse = open(CourseName, 'r')
     for eachline in fCourse:
         courseJs = json.loads(eachline)
-        if courseJs['XNXQ'] == XNXQText:
+        if courseJs['XNXQ'] == selXNXQ:
             selKC = courseJs['value']
             
             # call the spider

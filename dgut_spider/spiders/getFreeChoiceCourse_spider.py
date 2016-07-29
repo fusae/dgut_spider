@@ -102,14 +102,7 @@ class FreeChoiceSpider(scrapy.Spider):
                 item['week'] = rowList[7]
                 item['classTime'] = rowList[8]
                 item['location'] = rowList[9]
-
-                XQXXName = '/home/fusae/PycharmProjects/dgut_spider/dgut_spider/Data/FifthParam.json'
-                fParam = open(XQXXName, 'r')
-                for eachline in fParam:
-                    paramJs = json.loads(eachline)
-                    if paramJs['value'] == self.Sel_XQXX:
-                        item['campus'] = paramJs['text']
-
+                item['campus'] = self.Sel_XQXX
                 yield item
 
                 i += 10
