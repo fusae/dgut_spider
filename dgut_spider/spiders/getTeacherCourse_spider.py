@@ -185,6 +185,8 @@ class GetTeacherCourseSpider(scrapy.Spider):
                 profCourseItem['week'] = detailCourse[8]
                 profCourseItem['section'] = detailCourse[9]
                 profCourseItem['location'] = detailCourse[10]
+                profCourseItem['XNXQ'] = profItem['XNXQ']
+                profCourseItem['teacher'] = profItem['teacher']
 
                 tables = containItem() # all the data in every for loop to send to the pipeline 
                 tables['first'] = profItem

@@ -143,6 +143,7 @@ class GetClassroomSpider(scrapy.Spider):
                         courseItem['teacher'] = teacher
                         courseItem['classTime'] = classTime
                         courseItem['num'] = num
+                        courseItem['classroom'] = roomItem['classroom']
                         courseItem['snum'] = str(i)
                         i += 1
 

@@ -82,7 +82,15 @@ class CustomPipeline(object):
                                                classTime, \
                                                location, \
                                                className, \
-                                               stuNum) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                                               stuNum) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
+                                               ON DUPLICATE KEY UPDATE \
+                                               college = %s, \
+                                               hours = %s, \
+                                               credit = %s, \
+                                               teacher = %s, \
+                                               location = %s, \
+                                               className = %s, \
+                                               stuNum = %s;"
                     cursor.execute(sql, (item['XNXQ'],
                                          item['college'],
                                          item['name'],
@@ -90,6 +98,13 @@ class CustomPipeline(object):
                                          item['credit'],
                                          item['teacher'],
                                          item['classTime'],
+                                         item['location'],
+                                         item['className'],
+                                         item['stuNum'],
+                                         item['college'],
+                                         item['hours'],
+                                         item['credit'],
+                                         item['teacher'],
                                          item['location'],
                                          item['className'],
                                          item['stuNum']))
@@ -150,7 +165,11 @@ class TeacherCoursePipeline(object):
                                           gender, \
                                           title, \
                                           note1, \
-                                          note2) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                                          note2) VALUES (%s, %s, %s, %s, %s, %s, %s) \
+                                          ON DUPLICATE KEY UPDATE \
+                                          department = %s, \
+                                          note1 = %s, \
+                                          note2 = %s;"
                 # Teacher only insert once
                 if item['second']['snum'] == '1':
                     cursor.execute(sql1, (item['first']['XNXQ'],
@@ -159,14 +178,15 @@ class TeacherCoursePipeline(object):
                                          item['first']['gender'],
                                          item['first']['title'],
                                          item['first']['note1'],
+                                         item['first']['note2'],
+                                         item['first']['department'],
+                                         item['first']['note1'],
                                          item['first']['note2']))
                     self.connection.commit()
 
                 #Create a new record
-                cursor.execute("select max(id) from staff")
-                teacherId = cursor.fetchone()['max(id)']
-                    
-                sql2 = "INSERT INTO staffCourse (teacherId, \
+                sql2 = "INSERT INTO staffCourse (XNXQ, \
+                                                 teacher, \
                                                  snum, \
                                                  course, \
                                                  credit, \
@@ -177,8 +197,20 @@ class TeacherCoursePipeline(object):
                                                  stuNum, \
                                                  week, \
                                                  section, \
-                                                 location) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                cursor.execute(sql2, (teacherId,
+                                                 location) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
+                                                 ON DUPLICATE KEY UPDATE \
+                                                 course = %s, \
+                                                 credit = %s, \
+                                                 teachWay = %s, \
+                                                 courseType = %s, \
+                                                 classNum = %s, \
+                                                 className = %s, \
+                                                 stuNum = %s, \
+                                                 week = %s, \
+                                                 section = %s, \
+                                                 location = %s;"
+                cursor.execute(sql2, (item['second']['XNXQ'],
+                                      item['second']['teacher'],
                                       item['second']['snum'],
                                       item['second']['course'],
                                       item['second']['credit'],
@@ -189,7 +221,18 @@ class TeacherCoursePipeline(object):
                                       item['second']['stuNum'],
                                       item['second']['week'],
                                       item['second']['section'],
-                                      item['second']['location']))
+                                      item['second']['location'],
+                                      item['second']['course'],
+                                      item['second']['credit'],
+                                      item['second']['teachWay'],
+                                      item['second']['courseType'],
+                                      item['second']['classNum'],
+                                      item['second']['className'],
+                                      item['second']['stuNum'],
+                                      item['second']['week'],
+                                      item['second']['section'],
+                                      item['second']['location']
+                                      ))
                 self.connection.commit()
 
         except Exception as e:
@@ -272,29 +315,36 @@ class ClassroomPipeline(object):
                                           campus, \
                                           building, \
                                           classroom, \
-                                          note1) VALUES (%s, %s, %s, %s, %s)"
+                                          note1) VALUES (%s, %s, %s, %s, %s) \
+                                          ON DUPLICATE KEY UPDATE \
+                                          note1 = %s;"
                 # classroom only insert once
                 if item['second']['snum'] == '1':
                     cursor.execute(sql1, (item['first']['XNXQ'],
                                          item['first']['campus'],
                                          item['first']['building'],
                                          item['first']['classroom'],
+                                         item['first']['note1'],
                                          item['first']['note1']))
                     self.connection.commit()
 
                 #Create a new record
-                cursor.execute("select max(id) from room")
-                roomId = cursor.fetchone()['max(id)']
-                    
-                sql2 = "INSERT INTO roomCourse (roomId, \
+                sql2 = "INSERT INTO roomCourse (classroom, \
                                                  courseName, \
                                                  teacher, \
                                                  classTime, \
-                                                 num) VALUES (%s, %s, %s, %s, %s)"
-                cursor.execute(sql2, (roomId,
+                                                 num) VALUES (%s, %s, %s, %s, %s) \
+                                                 ON DUPLICATE KEY UPDATE \
+                                                 courseName = %s, \
+                                                 teacher = %s, \
+                                                 num = %s;"
+                cursor.execute(sql2, (item['second']['classroom'],
                                       item['second']['courseName'],
                                       item['second']['teacher'],
                                       item['second']['classTime'],
+                                      item['second']['num'],
+                                      item['second']['courseName'],
+                                      item['second']['teacher'],
                                       item['second']['num']))
                 self.connection.commit()
 
@@ -361,11 +411,30 @@ class FreeChoicePipeline(object):
                                           stuNum, \
                                           week, \
                                           classTime, \
-                                          location) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                                          location) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) \
+                                          ON DUPLICATE KEY UPDATE \
+                                          course = %s, \
+                                          credit = %s, \
+                                          teacher = %s, \
+                                          title = %s, \
+                                          classNum = %s, \
+                                          stuNum = %s, \
+                                          week = %s, \
+                                          classTime = %s, \
+                                          location = %s;"
 
                 cursor.execute(sql1, (item['XNXQ'],
                                       item['campus'],
                                       int(item['snum']),
+                                      item['course'],
+                                      item['credit'],
+                                      item['teacher'],
+                                      item['title'],
+                                      item['classNum'],
+                                      item['stuNum'],
+                                      item['week'],
+                                      item['classTime'],
+                                      item['location'],
                                       item['course'],
                                       item['credit'],
                                       item['teacher'],

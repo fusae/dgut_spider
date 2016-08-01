@@ -54,6 +54,8 @@ class DetailProfItem(scrapy.Item):
 
 # detail professor course message
 class DetailProfCourseItem(scrapy.Item):
+    XNXQ = scrapy.Field() # 学年学期
+    teacher = scrapy.Field() # 教师
     snum = scrapy.Field() # serial number
     course = scrapy.Field() # 课程
     credit = scrapy.Field() # 学分
@@ -96,6 +98,7 @@ class RoomItem(scrapy.Item):
 # some course message of this room
 class RoomCourseMessageItem(scrapy.Item):
     snum = scrapy.Field()       # 序列号，在插入数据库时起识别插入作用
+    classroom = scrapy.Field()  # 教室
     courseName = scrapy.Field() # 课程
     teacher = scrapy.Field()    # 教师
     classTime = scrapy.Field()  # 上课时间

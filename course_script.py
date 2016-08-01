@@ -2,9 +2,6 @@ import json
 import os
 import subprocess
 
-# To create database
-loginDatabase = 'mysql --user=dgut_admin --password=admindgut+1s < scheme.sql'
-subprocess.call(loginDatabase, shell=True)
 
 XNXQName = '/home/fusae/PycharmProjects/dgut_spider/dgut_spider/Data/XNXQ.json'
 CourseName = '/home/fusae/PycharmProjects/dgut_spider/dgut_spider/Data/Course.json'
