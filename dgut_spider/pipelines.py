@@ -110,9 +110,11 @@ class CustomPipeline(object):
                                          item['stuNum']))
 
                     connection.commit()
-
-            finally:
-                connection.close()
+            except Exception as e:
+                print('-----------------ERROR BEGIN--------------------------')
+                print(e)
+                print(item)
+                print('-----------------ERROR END----------------------------')
 
             return item
 
@@ -236,8 +238,10 @@ class TeacherCoursePipeline(object):
                 self.connection.commit()
 
         except Exception as e:
-            print('------------------------------------------')
+            print('-----------------ERROR BEGIN--------------------------')
             print(e)
+            print(item)
+            print('-----------------ERROR END----------------------------')
         return item
 
     def close_spider(self, spider):
@@ -349,8 +353,10 @@ class ClassroomPipeline(object):
                 self.connection.commit()
 
         except Exception as e:
-            print('------------------------------------------')
+            print('-----------------ERROR BEGIN--------------------------')
             print(e)
+            print(item)
+            print('-----------------ERROR END----------------------------')
         return item
 
     def close_spider(self, spider):
@@ -448,8 +454,10 @@ class FreeChoicePipeline(object):
 
 
         except Exception as e:
-            print('------------------------------------------')
+            print('-----------------ERROR BEGIN--------------------------')
             print(e)
+            print(item)
+            print('-----------------ERROR END----------------------------')
         return item
 
     def close_spider(self, spider):
