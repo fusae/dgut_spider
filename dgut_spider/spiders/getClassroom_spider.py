@@ -26,7 +26,7 @@ class GetClassroomSpider(scrapy.Spider):
         self.Sel_JXL = Sel_JXL
         self.Sel_ROOM = Sel_ROOM
         self.Sel_XNXQ = Sel_XNXQ
-        
+
 
     def start_requests(self):
         request = scrapy.Request(self.getUrl,

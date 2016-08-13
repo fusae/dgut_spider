@@ -10,6 +10,7 @@ from dgut_spider.items import DetailProfItem
 from dgut_spider.items import DetailProfCourseItem
 from dgut_spider.items import containItem
 
+
 class GetTeacherCourseSpider(scrapy.Spider):
     name = 'TeacherCourse'
     custom_settings = {

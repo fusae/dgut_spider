@@ -6,7 +6,6 @@ from scrapy.selector import Selector
 from dgut_spider.items import FreeChoiceItem
 import json
 
-
 class FreeChoiceSpider(scrapy.Spider):
     name = "FreeChoice"
     custom_settings = {
@@ -22,7 +21,6 @@ class FreeChoiceSpider(scrapy.Spider):
         self.findSessionId = None # to save cookies
         self.Sel_XNXQ = Sel_XNXQ
         self.Sel_XQXX = Sel_XQXX
-        
 
 
     def start_requests(self):

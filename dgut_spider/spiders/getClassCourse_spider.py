@@ -5,6 +5,7 @@ from datetime import datetime
 from scrapy.selector import Selector
 from dgut_spider.handlePic import handle
 
+
 class GetClassCourseSpider(scrapy.Spider):
     name = 'ClassCourse'
 

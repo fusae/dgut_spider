@@ -11,6 +11,7 @@ from datetime import datetime
 from scrapy.selector import Selector
 from dgut_spider.items import DetailItem
 
+
 class GetXNXQCourseSpider(scrapy.Spider):
     name = 'XNXQCourse'
     custom_settings = {
@@ -26,6 +27,7 @@ class GetXNXQCourseSpider(scrapy.Spider):
         self.findSessionId = None # to save the cookies
         self.selXNXQ = selXNXQ # the data to be posted
         self.selKC = selKC # the data to be posted
+
 
     def handlePic(self, content):
         # img = Image.open('yzm.gif') # This will make an error
