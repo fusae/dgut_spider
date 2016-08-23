@@ -124,35 +124,30 @@ class GetClassroomSpider(scrapy.Spider):
                         pass
                     index += 1
 
-            # second table
-            courseItem = RoomCourseMessageItem()
             # now split message from data dict
-            i = 1 # as a serial number of courses
+            ct = 1 # as a serial number of courses
             for k, v in data.items():
                 if v:
                     for each in v:
-                        each = each.split(' \r\n')
-                        courseName = each[0] # course's name
-                        # split data
-                        temp1 = each[1].split(' ')
-                        teacher = temp1[0] # teacher's name
-                        classTime = k + temp1[1] # classTime
-                        temp2 = each[2].split('£º')
-                        num = temp2[1]  # the number of students
-                        courseItem['courseName'] = courseName
-                        courseItem['teacher'] = teacher
-                        courseItem['classTime'] = classTime
-                        courseItem['num'] = num
-                        courseItem['classroom'] = roomItem['classroom']
-                        courseItem['snum'] = str(i)
-                        i += 1
+                        each = each.split('\r\n')
+                        for i in range(int(len(each) / 3)): # each maybe has one or more CourseMessage, you can print(each) for test
+                            # second table
+                            courseItem = RoomCourseMessageItem()
+                            courseItem['courseName'] = each[i * 3 + 0]
+                            courseItem['teacher'] = each[i * 3 + 1].split(' ')[0]
+                            courseItem['classTime'] = k + each[i * 3 + 1].split(' ')[1]
+                            courseItem['num'] = each[i * 3 + 2].split('£º')[1]
+                            courseItem['classroom'] = roomItem['classroom']
+                            courseItem['snum'] = str(ct)
+                            ct += 1
 
-                        # third item to contain first and second
-                        contain = containItem()
-                        contain['first'] = roomItem
-                        contain['second'] = courseItem
-#                        print(contain)
-                        yield contain
+                            # third item to contain first and second
+                            contain = containItem()
+                            contain['first'] = roomItem
+                            contain['second'] = courseItem
+    #                        print(contain)
+
+                            yield contain
 
         
 
